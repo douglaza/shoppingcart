@@ -12,13 +12,6 @@ function createCustomElement(element, className, innerText) {
   return e;
 }
 
-// const cartItemClickListener = () => {
-//   const shopCart = document.getElementsByClassName('.cart__items');
-//   const clickedProd = event.target;
-//   shopCart.removeChild(clickedProd);
-// };
-
-
 function createProductItemElement({ sku, name, image }) {
   const section = document.createElement('section');
   section.className = 'item';
@@ -49,36 +42,57 @@ function createCartItemElement({ sku, name, salePrice }) {
   return li;
 }
 
+function getSkuFromProductItem(item) {
+  return item.querySelector('span.item__sku').innerText;
+}
+let sumItems = 0;
+
+const sumPrices = (priceItem) => {
+  const calculator = document.querySelector('.total-price');
+  sumItems += priceItem;
+  calculator.innerHTML = sumItems;
+};
+
 const putOnCart = (data) => {
+  // cria um objeto com as chaves do parâmetro passado
   const prod = { sku: data.id, name: data.title, salePrice: data.price };
+  // acessa a lista <ol> do DOM
   const shopCart = document.querySelector('.cart__items');
+  // chama a função pra incluir o objeto recebido como filho <li> da lista
   shopCart.appendChild(createCartItemElement(prod));
+  sumPrices(data.price);
 };
 
 const putOnCartListener = () => {
   const sectionItems = document.querySelectorAll('.item');
   sectionItems.forEach((element) => {
-    element.lastElementChild.addEventListener('click', () => {  // https://mzl.la/2TzuhZ1
-      fetch(`https://api.mercadolibre.com/items/${element.firstElementChild.innerHTML}`)  // https://bit.ly/2WXSavJ
+    // Adiciona um listener no último filho de cada objeto (elemento) com classe .item (Adicionar ao Carrinho!)
+    element.lastElementChild.addEventListener('click', () => {
+      // Faz requisição à API segundo o sku de cada elemento através da função getSkuFromProductItem
+      fetch(`https://api.mercadolibre.com/items/${getSkuFromProductItem(element)}`)
+        // fetch(`https://api.mercadolibre.com/items/${element.firstElementChild.innerHTML}`) // forma alternativa
         .then(response => response.json())
-        .then(data => putOnCart(data))
+        .then(data => putOnCart(data))  // chama a função putOnCart passando o JSON como parâmetro.
         .catch(error => console.log(error));
     });
   });
 };
 
-const returnedProduct = (arrayResults) => {
-  arrayResults.forEach((results) => {
-    const sku = results.id;
-    const name = results.title;
-    const image = results.thumbnail;
-    const itemsList = document.querySelector('.items');
-    itemsList.appendChild(createProductItemElement({ sku, name, image }));
+function returnedProduct(results) {
+  results.forEach((item) => {
+    // cria um objeto {sku, name, image } para cada um dos produtos da lista
+    const obj = { sku: item.id, name: item.title, image: item.thumbnail };
+    const prod = createProductItemElement(obj);
+    const gridItems = document.querySelector('.items');
+    gridItems.appendChild(prod);
+    // gridItems.appendChild(createProductItemElement(obj));  // outra forma de fazer a mesma coisa
   });
   putOnCartListener();
-};
+  // true
+}
 
-const firstRequirement = () => {
+
+const apiInit = () => {
   const QUERY = 'computador';
   fetch(`https://api.mercadolibre.com/sites/MLB/search?q=${QUERY}`)
     .then(response => response.json())
@@ -89,9 +103,20 @@ const firstRequirement = () => {
 };
 
 window.onload = function onload() {
-  firstRequirement();
+  apiInit();
   emptyCart();
   setTimeout(() => {
     (document.querySelector('.loading').remove());
-  }, 1500);
+  }, 1234);
 };
+
+// const returnedProduct = (arrayResults) => {
+//   arrayResults.forEach((results) => {
+//     const sku = results.id;
+//     const name = results.title;
+//     const image = results.thumbnail;
+//     const itemsList = document.querySelector('.items');
+//     itemsList.appendChild(createProductItemElement({ sku, name, image }));
+//   });
+//   putOnCartListener();
+// };
