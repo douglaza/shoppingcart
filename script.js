@@ -66,7 +66,7 @@ const putOnCart = (data) => {
 const putOnCartListener = () => {
   const sectionItems = document.querySelectorAll('.item');
   sectionItems.forEach((element) => {
-    // Adiciona um listener no último filho de cada objeto (elemento) com classe .item (Adicionar ao Carrinho!)
+    // Adiciona um listener no último filho de cada elemento de classe .item (Adicionar ao Carrinho)
     element.lastElementChild.addEventListener('click', () => {
       // Faz requisição à API segundo o sku de cada elemento através da função getSkuFromProductItem
       fetch(`https://api.mercadolibre.com/items/${getSkuFromProductItem(element)}`)
