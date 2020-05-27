@@ -30,8 +30,20 @@ function emptyCart() { // limpa lista de compras
   });
 }
 
+const priceUpdate = async () => {
+  let sumItems = 0;
+  try {
+    const cartItems = await document.querySelectorAll('.cart__item');
+    cartItems.forEach(
+      prod => (sumItems += parseFloat(prod.innerText.split('$')[1])),
+    );
+    document.querySelector('.total-price').innerText = sumItems;
+  } catch (err) { console.log('Erro no requisito #5', err); }
+};
+
 function cartItemClickListener(event) {  // remove item clicado
   event.target.remove();  // https://bit.ly/2AZWIJv
+  priceUpdate();
 }
 
 function createCartItemElement({ sku, name, salePrice }) {
@@ -45,13 +57,6 @@ function createCartItemElement({ sku, name, salePrice }) {
 function getSkuFromProductItem(item) {
   return item.querySelector('span.item__sku').innerText;
 }
-let sumItems = 0;
-
-const sumPrices = (priceItem) => {
-  const calculator = document.querySelector('.total-price');
-  sumItems += priceItem;
-  calculator.innerHTML = sumItems;
-};
 
 const putOnCart = (data) => {
   // cria um objeto com as chaves do parâmetro passado
@@ -60,7 +65,7 @@ const putOnCart = (data) => {
   const shopCart = document.querySelector('.cart__items');
   // chama a função pra incluir o objeto recebido como filho <li> da lista
   shopCart.appendChild(createCartItemElement(prod));
-  sumPrices(data.price);
+  priceUpdate();
 };
 
 const putOnCartListener = () => {
