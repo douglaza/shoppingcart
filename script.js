@@ -22,28 +22,36 @@ function createProductItemElement({ sku, name, image }) {
   return section;
 }
 
+const saveOnStorage = () => {
+  const cartList = document.querySelector('.cart__items').innerHTML;
+  localStorage.setItem('cart_List', cartList);
+}
+
+const priceUpdate = async () => { // Função que atualiza o preço do carrinho de compras
+  let sumItems = 0;
+  try {
+    const cartItems = await document.querySelectorAll('.cart__item'); // Acesso ao elemento lista
+    cartItems.forEach(  // converte o que está depois de $ na string para nº e incrementa o contador
+      prod => (sumItems += Number(prod.innerText.split('$')[1])),
+    );
+    document.querySelector('.total-price').innerText = sumItems; // imprime o resultado no HTML
+  } catch (err) { console.log('Erro no requisito #5', err); }
+};
+
 function emptyCart() { // limpa lista de compras
   const btnEmpty = document.querySelector('.empty-cart');
   btnEmpty.addEventListener('click', () => {
     const shopCart = document.querySelector('.cart__items');
     shopCart.innerHTML = '';
+    priceUpdate();
+    saveOnStorage();
   });
 }
-
-const priceUpdate = async () => {
-  let sumItems = 0;
-  try {
-    const cartItems = await document.querySelectorAll('.cart__item');
-    cartItems.forEach(
-      prod => (sumItems += parseFloat(prod.innerText.split('$')[1])),
-    );
-    document.querySelector('.total-price').innerText = sumItems;
-  } catch (err) { console.log('Erro no requisito #5', err); }
-};
 
 function cartItemClickListener(event) {  // remove item clicado
   event.target.remove();  // https://bit.ly/2AZWIJv
   priceUpdate();
+  saveOnStorage();
 }
 
 function createCartItemElement({ sku, name, salePrice }) {
@@ -66,6 +74,7 @@ const putOnCart = (data) => {
   // chama a função pra incluir o objeto recebido como filho <li> da lista
   shopCart.appendChild(createCartItemElement(prod));
   priceUpdate();
+  saveOnStorage();
 };
 
 const putOnCartListener = () => {
@@ -93,9 +102,16 @@ function returnedProduct(results) {
     // gridItems.appendChild(createProductItemElement(obj));  // outra forma de fazer a mesma coisa
   });
   putOnCartListener();
-  // true
 }
 
+const loadCartSaved = () => { // carrega o carrinho de compras do Local Storage
+  const storagedList = localStorage.getItem('cart_List'); // recupera os dados da chave cart_List
+  document.querySelector('.cart__items').innerHTML = storagedList;  // imprime os dados no carrinho
+  const cartItems = document.querySelector('.cart__items'); // acessa a lista de produtos no HTML
+  cartItems.addEventListener('click', cartItemClickListener); // itens recuperados 'excluíveis'
+  priceUpdate();
+  // emptyCart();  // limpa o valor das compras
+}
 
 const apiInit = () => {
   const QUERY = 'computador';
@@ -113,6 +129,7 @@ window.onload = function onload() {
   setTimeout(() => {
     (document.querySelector('.loading').remove());
   }, 1234);
+  loadCartSaved();
 };
 
 // const returnedProduct = (arrayResults) => {
