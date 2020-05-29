@@ -25,7 +25,7 @@ function createProductItemElement({ sku, name, image }) {
 const saveOnStorage = () => {
   const cartList = document.querySelector('.cart__items').innerHTML;
   localStorage.setItem('cart_List', cartList);
-}
+};
 
 const priceUpdate = async () => { // Função que atualiza o preço do carrinho de compras
   let sumItems = 0;
@@ -38,7 +38,7 @@ const priceUpdate = async () => { // Função que atualiza o preço do carrinho 
   } catch (err) { console.log('Erro no requisito #5', err); }
 };
 
-function emptyCart() { // limpa lista de compras
+const emptyCart = () => { // limpa lista de compras
   const btnEmpty = document.querySelector('.empty-cart');
   btnEmpty.addEventListener('click', () => {
     const shopCart = document.querySelector('.cart__items');
@@ -46,7 +46,7 @@ function emptyCart() { // limpa lista de compras
     priceUpdate();
     saveOnStorage();
   });
-}
+};
 
 function cartItemClickListener(event) {  // remove item clicado
   event.target.remove();  // https://bit.ly/2AZWIJv
@@ -92,7 +92,7 @@ const putOnCartListener = () => {
   });
 };
 
-function returnedProduct(results) {
+const returnedProduct = (results) => {
   results.forEach((item) => {
     // cria um objeto {sku, name, image } para cada um dos produtos da lista
     const obj = { sku: item.id, name: item.title, image: item.thumbnail };
@@ -102,7 +102,7 @@ function returnedProduct(results) {
     // gridItems.appendChild(createProductItemElement(obj));  // outra forma de fazer a mesma coisa
   });
   putOnCartListener();
-}
+};
 
 const loadCartSaved = () => { // carrega o carrinho de compras do Local Storage
   const storagedList = localStorage.getItem('cart_List'); // recupera os dados da chave cart_List
@@ -111,7 +111,7 @@ const loadCartSaved = () => { // carrega o carrinho de compras do Local Storage
   cartItems.addEventListener('click', cartItemClickListener); // itens recuperados 'excluíveis'
   priceUpdate();
   // emptyCart();  // limpa o valor das compras
-}
+};
 
 const apiInit = () => {
   const QUERY = 'computador';
@@ -131,14 +131,3 @@ window.onload = function onload() {
   }, 1234);
   loadCartSaved();
 };
-
-// const returnedProduct = (arrayResults) => {
-//   arrayResults.forEach((results) => {
-//     const sku = results.id;
-//     const name = results.title;
-//     const image = results.thumbnail;
-//     const itemsList = document.querySelector('.items');
-//     itemsList.appendChild(createProductItemElement({ sku, name, image }));
-//   });
-//   putOnCartListener();
-// };
