@@ -164,7 +164,7 @@ const apiInit = () => {
 
 // função onload que é chamada após o carregamento da página HTML: primeiro é chamada a função que
 // fará a requisição à API do Mercado Livre; a função de limpar o carrinho é iniciada; uma mensagem
-// de Loading... é carregada no carrinho de compras e removida após 1234ms; o carrinho de compras é
+// de "Loading..." é carregada no carrinho de compras e removida após 1234ms; o carrinho de compras é
 // restaurado do local storage.
 window.onload = function onload() {
   apiInit();
